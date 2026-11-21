@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ID Egypt | المنظومة المصرفية</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.total{color:#eef3ff;background:linear-gradient(135deg,#1e272e,#485460);border:1px solid #e9b44c4d;border-radius:20px;padding:26px;position:relative;overflow:hidden;box-shadow:var(--shadow);margin-bottom:20px}
+.total::before{content:"";position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,#e9b44c0d 0%,transparent 70%);pointer-events:none}
+.visa{color:#eef3ff;background:linear-gradient(45deg,#000,#2c3e50);width:100%;max-width:300px;height:176px;border-radius:14px;padding:18px;margin:14px auto;border:1px solid #ffffff1a;display:flex;flex-direction:column;justify-content:space-between}
+.loan{border-inline-start:4px solid var(--bad);background:#ff5c6c0d;padding:12px 14px;border-radius:8px;margin-bottom:12px}
+.stmt{margin-top:22px}
+</style>
+</head>
+<body>
+<main class="page" id="main">
+  <div class="crumbs"><a href="index.html">الرئيسية</a> › المال والاستثمار › البنوك</div>
+  <div class="page-head"><div><h1>🏦 القطاع المصرفي والاستثماري الموحد</h1><p>جميع حساباتك البنكية في مكان واحد</p></div><span class="pill ok">اتصال آمن بنظام iScore</span></div>
+
+  <section class="total" aria-label="إجمالي السيولة">
+    <p class="muted" style="margin:0">إجمالي السيولة النقدية الموحدة (ما يعادل بالجنيه)</p>
+    <div class="big" style="font-size:2.4rem"><span id="total"></span> <small style="font-size:1rem;color:#fff">جم</small></div>
+    <div style="display:flex;gap:22px;flex-wrap:wrap;font-size:.92rem"><span id="nb"></span><span id="gr"></span></div>
+  </section>
+
+  <div class="grid">
+    <section class="box" aria-labelledby="a1"><h3 class="hl" id="a1">البنك الأهلي المصري</h3><p id="a1t" class="muted"></p><div class="big" style="font-size:1.6rem" id="a1b"></div><div class="bar"><i id="a1p"></i></div><small id="a1s"></small><hr><button class="button outline sm" id="stmtBtn" type="button">كشف حساب مختوم (QR)</button></section>
+    <section class="box" aria-labelledby="a2"><h3 class="hl" id="a2">بنك مصر - محفظة العملات</h3><p id="a2t" class="muted"></p><div class="big" style="font-size:1.6rem" id="a2b"></div><p class="ok" style="font-size:.85rem">سعر الصرف التجريبي: 1$ = <span id="fx"></span> جم</p><button class="button sm" id="conv" type="button">تحويل للعملة المحلية</button></section>
+    <section class="box" aria-labelledby="a3"><h3 class="hl" id="a3">البطاقات الائتمانية</h3>
+      <div class="visa"><div style="display:flex;justify-content:space-between;align-items:center"><small>World Elite</small><span class="mc"><i></i><i></i></span></div><div class="mono" style="font-size:1.05rem">**** **** **** <span id="cn"></span></div><div style="display:flex;justify-content:space-between;font-size:.75rem"><span id="cname"></span><span>05/30</span></div></div>
+      <p>المستحق للسداد: <b class="bad" id="cdue"></b> <button class="button sm" id="payCard" type="button">سداد</button></p></section>
+  </div>
+
+  <div class="grid" style="margin-top:18px">
+    <section class="box" aria-labelledby="ln"><h3 id="ln" class="hl">القروض والتمويل</h3><div id="loans"></div></section>
+    <section class="box" aria-labelledby="iv"><h3 id="iv" class="hl">المحفظة الاستثمارية (EGX)</h3><div class="table-wrap"><table><tbody id="stocks"></tbody></table></div><p id="pl" style="border-top:1px solid var(--line);padding-top:10px;margin-top:10px"></p><a class="button ghost sm" href="finance.html">مركز الاستثمار والضرائب</a></section>
+  </div>
+
+  <article class="paper stmt" id="stmt" hidden>
+    <div class="head"><img class="logo" src="assets/img/logo.png" alt=""><h2>كشف حساب مختوم</h2><h3 id="sBank"></h3></div>
+    <p>صاحب الحساب: <span class="val" id="sName"></span></p><p>رقم الحساب: <span class="val" id="sAcc"></span></p><p>الرصيد الحالي: <span class="val" id="sBal"></span> جم</p>
+    <div class="table-wrap"><table><thead><tr><th>العملية</th><th>التفاصيل</th><th>التاريخ</th></tr></thead><tbody id="sRows"></tbody></table></div>
+    <div class="foot"><div class="qr" id="sQr"></div><div class="seal">البنك<br>ختم رقمي</div></div>
+    <div class="btn-row no-print"><button class="button" type="button" onclick="window.print()">🖨️ طباعة</button><button class="button ghost" type="button" id="sClose">إغلاق</button></div>
+  </article>
+</main>
+<script src="assets/js/qr.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+NCC.shell();
+ID.ready(function (u, D) {
+  const $ = id => document.getElementById(id), st = ID.state(), b = D.bank(), f = D.finance(), e = ID.esc;
+  function render() {
+    const bal = D.balances();
+    $('total').textContent = ID.fmt(bal.total); $('nb').textContent = '🏦 ' + bal.banks + (bal.banks === 1 ? ' بنك مرتبط' : ' بنوك مرتبطة'); $('gr').textContent = '📈 +' + b.growth + '% نمو سنوي (تجريبي)';
+    $('a1t').textContent = b.ahli.type + ': ' + b.ahli.mask; $('a1b').innerHTML = ID.fmt(bal.ahli) + ' <small>جم</small>';
+    const base = Math.max(1, b.ahli.base); $('a1p').style.width = Math.min(100, Math.round(bal.ahli / base * 100)) + '%'; $('a1s').textContent = 'معدل الإنفاق الشهري التقريبي: ' + ID.fmt(b.monthly) + ' جم';
+    $('a2t').textContent = b.misr.type + ': ' + b.misr.mask; $('a2b').innerHTML = ID.fmt(bal.usd) + ' <small>$</small>'; $('fx').textContent = ID.FX;
+    $('conv').disabled = bal.usd <= 0;
+    $('cn').textContent = b.cardNo; $('cname').textContent = u.name;
+    const due = st.cardPaid ? 0 : b.cardDue; $('cdue').textContent = ID.fmt(due) + ' جم'; $('payCard').hidden = due === 0;
+    $('loans').innerHTML = b.loans.length ? b.loans.map(l => '<div class="loan"><p><b>' + l.name + '</b> - قيد السداد</p><p>إجمالي القرض: ' + ID.fmt(l.total) + ' جم</p><p>الأقساط المتبقية: ' + l.left + ' شهر</p><div class="bar" style="--c:var(--bad)"><i style="width:' + l.paid + '%"></i></div><small>تم سداد ' + l.paid + '% من إجمالي التمويل</small></div>').join('') : '<p class="muted">لا توجد قروض أو تمويلات قائمة.</p>';
+    $('stocks').innerHTML = f.egx.length ? f.egx.map(s => '<tr><td>' + s.name + '</td><td class="num ' + (s.plPct >= 0 ? 'ok' : 'bad') + '">' + (s.plPct >= 0 ? '+' : '') + s.plPct + '%</td></tr>').join('') : '<tr><td class="muted">لا توجد استثمارات.</td></tr>';
+    const tot = f.egx.reduce((x, s) => x + s.pl, 0); $('pl').innerHTML = 'صافي الأرباح/الخسائر: <b class="' + (tot >= 0 ? 'ok' : 'bad') + '">' + (tot >= 0 ? '+' : '') + ID.fmt(tot) + ' جم</b>';
+  }
+  $('conv').onclick = () => { const max = D.balances().usd;
+    ID.dialog({ title: 'تحويل دولار إلى جنيه', note: 'المتاح: ' + ID.fmt(max) + ' $ • السعر ' + ID.FX + ' جم', fields: [{ id: 'amt', label: 'المبلغ بالدولار', type: 'number', inputmode: 'numeric', test: v => +v > 0 && +v <= max, msg: 'اكتب مبلغاً بين 1 و ' + ID.fmt(max) + '.' }], ok: 'تحويل' }).then(v => {
+      if (!v) return; st.usdOut = (st.usdOut || 0) + Math.round(+v.amt); ID.log('تحويل عملة', ID.fmt(v.amt) + ' $ إلى ' + ID.fmt(+v.amt * ID.FX) + ' جم'); render(); ID.toast('تم التحويل بنجاح'); }); };
+  $('payCard').onclick = () => ID.confirm('سداد البطاقة الائتمانية', 'سيتم خصم ' + ID.fmt(b.cardDue) + ' جم من حسابك الجاري.', 'سداد').then(ok => { if (!ok) return; const r = ID.pay(b.cardDue, 'سداد مستحق البطاقة الائتمانية'); if (!r.ok) return ID.toast(r.err, true); st.cardPaid = Date.now(); ID.save(); render(); ID.toast('تم السداد'); });
+  $('stmtBtn').onclick = () => {
+    $('sBank').textContent = b.ahli.bank; $('sName').textContent = u.name; $('sAcc').textContent = b.ahli.mask; $('sBal').textContent = ID.fmt(D.balances().ahli);
+    const rows = st.activity.slice(0, 8); $('sRows').innerHTML = rows.length ? rows.map(a => '<tr><td>' + e(a.title) + '</td><td>' + e(a.text) + '</td><td>' + ID.fmtDate(new Date(a.t)) + '</td></tr>').join('') : '<tr><td colspan="3">لا توجد حركات حديثة.</td></tr>';
+    ID.qr($('sQr'), 'IDEGYPT-DEMO|STMT|' + ID.refCode(u.nid + Date.now())); $('stmt').hidden = false; $('stmt').scrollIntoView({ behavior: 'smooth' });
+  };
+  $('sClose').onclick = () => { $('stmt').hidden = true; };
+  render();
+});
+</script>
+</body>
+</html>

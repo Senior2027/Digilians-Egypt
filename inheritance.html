@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ID Egypt | حصر الورثة والاستحقاقات</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.sum{color:#eef3ff;background:linear-gradient(135deg,#2c3e50,#000);border:2px solid #8e44ad;border-radius:16px;padding:26px;text-align:center;margin-bottom:22px}
+.asset{border-bottom:3px solid #8e44ad}
+</style>
+</head>
+<body>
+<main class="page" id="main">
+  <div class="crumbs"><a href="index.html">الرئيسية</a> › وزارة العدل › حصر الورثة</div>
+  <div class="page-head"><div><h1 style="color:#c39bd3">👥 منظومة حصر التركات والاستحقاقات</h1><p>محاكاة افتراضية لأغراض العرض فقط — لا تُعد إعلام وراثة رسمياً.</p></div></div>
+
+  <section class="sum" aria-label="ملخص التركة">
+    <h2 class="hl">الملف الحصري للمواطن: <span id="un"></span></h2>
+    <p>الرقم القومي: <span class="mono" id="ui"></span></p>
+    <div style="font-size:1.5rem;margin-top:8px">إجمالي التركة التقديرية: <b class="ok" id="tot"></b> <small>جم</small></div>
+  </section>
+
+  <div class="grid" style="--min:250px">
+    <div class="box asset"><h4>🏦 الأرصدة البنكية</h4><p class="muted">مجمعة من الحسابات المرتبطة</p><p>القيمة: <b id="bv"></b> جم</p><a href="banks.html" class="button ghost sm">التفاصيل</a></div>
+    <div class="box asset"><h4>🏠 الأصول العقارية</h4><p>عدد الوحدات المسجلة: <b id="pc"></b></p><p>القيمة التقديرية: <b id="pv"></b> جم</p><a href="justice.html" class="button ghost sm">التفاصيل</a></div>
+    <div class="box asset"><h4>👥 عدد الورثة المحتملين</h4><p>بناءً على ملف الأسرة: <b id="hc"></b> أفراد</p><p>حالة المسح: <span class="pill ok">مكتمل</span></p></div>
+  </div>
+
+  <div class="btn-row no-print" style="justify-content:center;margin-top:26px"><button class="button" id="gen" type="button" style="background:#8e44ad;color:#fff;padding:14px 38px">إصدار إعلام وراثة رقمي مؤقت</button></div>
+
+  <article class="paper" id="doc" style="margin-top:22px" hidden>
+    <div class="head"><img class="logo" src="assets/img/logo.png" alt=""><h2>وزارة العدل - محكمة الأسرة</h2><h3>إعلام وراثة رقمي (محاكاة)</h3></div>
+    <p>بعد الاطلاع على السجلات الرقمية للمتوفى (افتراضياً) السيد/ <span class="val" id="dn"></span></p>
+    <p>المقيد برقم قومي: <span class="val" id="di"></span></p>
+    <p><b>تُحصر ورثته الشرعيون في كل من:</b></p><ul id="hl"></ul>
+    <div style="border-top:1px solid #ccc;padding-top:8px;margin-top:12px"><p><b>نصيب الورثة:</b> طبقاً للشريعة الإسلامية والقوانين المنظمة.</p><p><b>تاريخ الحصر:</b> <span id="dd"></span></p></div>
+    <div class="foot"><div class="qr" id="dq"></div><div class="seal" style="border-color:#8e44ad;color:#8e44ad">نيابة الأسرة<br>حصر رقمي</div></div>
+    <div class="btn-row no-print"><button class="button" type="button" onclick="window.print()">🖨️ طباعة الوثيقة</button><button class="button ghost" type="button" id="dx">إغلاق</button></div>
+  </article>
+</main>
+<script src="assets/js/qr.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+NCC.shell();
+ID.ready(function (u, D) {
+  const $ = id => document.getElementById(id), A = D.assets(), F = D.family();
+  $('un').textContent = u.name; $('ui').textContent = u.nid;
+  $('bv').textContent = ID.fmt(A.bank); $('pc').textContent = A.propCount; $('pv').textContent = ID.fmt(A.prop); $('tot').textContent = ID.fmt(A.bank + A.prop); $('hc').textContent = F.heirs.length;
+  $('gen').onclick = () => {
+    $('dn').textContent = u.name; $('di').textContent = u.nid; $('dd').textContent = ID.fmtDate(new Date());
+    $('hl').innerHTML = F.heirs.map(h => '<li>' + h + ' (مستحق شرعي)</li>').join('');
+    ID.qr($('dq'), 'IDEGYPT-DEMO|HEIRS|' + ID.refCode(u.nid + 'heirs')); $('doc').hidden = false; ID.log('إعلام وراثة (محاكاة)', 'تم إصدار وثيقة تجريبية'); $('doc').scrollIntoView({ behavior: 'smooth' });
+  };
+  $('dx').onclick = () => { $('doc').hidden = true; };
+});
+</script>
+</body>
+</html>

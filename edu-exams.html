@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ID Egypt | أرقام الجلوس واللجان</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.exam{max-width:720px;margin:0 auto}
+.seat{font-size:2.8rem;font-weight:800;color:var(--brand);text-align:center;letter-spacing:6px;margin:14px 0 0;text-shadow:0 0 18px #e9b44c55}
+.stamp{border:2px dashed #e9b44c80;padding:10px;margin-top:18px;text-align:center;color:var(--brand);font-size:.85rem}
+.hdr{text-align:center;margin-bottom:12px}
+.hdr img{height:64px;background:#fff;border-radius:10px;padding:3px}
+</style>
+</head>
+<body>
+<main class="page" id="main">
+  <div class="crumbs"><a href="index.html">الرئيسية</a> › وزارة التربية والتعليم › أرقام الجلوس</div>
+  <div class="page-head"><div><h1>📑 بطاقة رقم الجلوس الرقمية</h1><p id="sub"></p></div><button class="button ghost no-print" type="button" onclick="window.print()">🖨️ طباعة</button></div>
+
+  <section class="box exam" aria-label="بطاقة رقم الجلوس">
+    <div class="hdr"><img src="assets/img/logo.png" alt=""><p class="muted" style="margin-top:8px">وزارة التربية والتعليم والتعليم الفني</p></div>
+    <div class="kv"><span>اسم الطالب</span><b id="n"></b></div>
+    <div class="kv"><span>الرقم القومي</span><b class="mono" id="i"></b></div>
+    <div class="kv"><span>الامتحان</span><b id="ex"></b></div>
+    <div class="seat" id="seat"></div>
+    <p class="muted" style="text-align:center;margin-top:0">رقم الجلوس الموحد</p>
+    <div class="kv"><span>المدرسة</span><b id="sc"></b></div>
+    <div class="kv"><span>اللجنة الامتحانية</span><b id="cm"></b></div>
+    <div class="kv"><span>مقر اللجنة</span><b id="ad"></b></div>
+    <div class="kv"><span>الحالة</span><span id="stt"></span></div>
+    <div class="stamp">معتمد رقمياً من منظومة ID Egypt • نموذج تجريبي</div>
+  </section>
+</main>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+NCC.shell();
+ID.ready(function (u, D) {
+  const $ = id => document.getElementById(id), x = D.exam(), s = x.stage;
+  $('n').textContent = u.name; $('i').textContent = u.nid; $('ex').textContent = s.name + ' - دور أول ' + s.year;
+  $('seat').textContent = x.seat; $('sc').textContent = x.school;
+  $('cm').textContent = x.hall + ' - لجنة رقم (' + x.committee + ')'; $('ad').textContent = u.gov + ' - ' + x.area;
+  $('stt').innerHTML = s.done ? '<span class="pill">امتحان منتهٍ</span>' : '<span class="pill warn">امتحان قادم</span>';
+  $('sub').textContent = s.done ? 'آخر امتحان مسجل لك' : 'امتحانك القادم في عام ' + s.year;
+});
+</script>
+</body>
+</html>

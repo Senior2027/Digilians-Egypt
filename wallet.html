@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ID Egypt | المحفظة الرقمية الموحدة</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+.tabs button{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:10px 22px;border-radius:99px;font:700 1rem var(--font);cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:24px;justify-items:center}
+.wc{width:100%;max-width:380px;border-radius:18px;padding:18px;position:relative;box-shadow:var(--shadow);overflow:hidden;min-height:215px}
+.wc .cap{position:absolute;top:12px;left:16px;font-size:.7rem;font-weight:800}
+.nid{background:linear-gradient(135deg,#e6edf3,#fafcfd);color:#26333f}
+.nid .cap{color:#c0392b}
+.photo{width:76px;height:96px;background:#cfd8df;border:2px solid #7d8b96;border-radius:6px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;font-size:.6rem;color:#556}
+.photo svg{width:70px;height:80px}
+.wc .row{display:flex;gap:14px;margin-top:20px}
+.wc .row div{flex:1}
+.wc p{margin:3px 0;font-size:.85rem}
+.wc .no{font:700 1.15rem Consolas,monospace;letter-spacing:2px;margin-top:10px;direction:ltr;text-align:right}
+.birth{background:#fff;color:#111;border:5px double #27ae60}
+.birth .t{text-align:center;border-bottom:1px solid #27ae60;margin:0 0 8px;font-weight:800;padding-bottom:4px}
+.birth .qr{width:70px;margin:6px auto 0;line-height:0}
+.lic{background:linear-gradient(135deg,#d4fc79,#96e6a1);color:#12351f;border:1px solid #27ae60}
+.pay{background:linear-gradient(135deg,#0b1d29,#1c3d52);border:1px solid var(--brand);text-align:center;color:#fff}
+.chip{width:42px;height:32px;border-radius:6px;background:linear-gradient(135deg,#ffd700,#b8860b)}
+.pay .qrbox{background:#fff;padding:10px;border-radius:10px;display:inline-block;line-height:0;margin:8px 0}
+.pay .qrbox svg{width:140px;height:140px}
+.na{background:var(--panel);border:1px dashed var(--line);color:var(--muted);text-align:center;display:flex;align-items:center;justify-content:center}
+.act{list-style:none;margin:0;padding:0}
+.act li{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);color:var(--muted)}
+.act li:last-child{border:0}.act b{color:var(--text)}
+</style>
+</head>
+<body>
+<main class="page" id="main">
+  <div class="crumbs"><a href="index.html">الرئيسية</a> › المحفظة</div>
+  <div class="page-head"><div><h1>💳 محفظتي الرقمية</h1><p>بطاقاتك ووثائقك في مكان واحد</p></div><button class="button ghost no-print" onclick="window.print()">🖨️ طباعة</button></div>
+
+  <div class="tabs no-print" role="tablist" aria-label="أقسام المحفظة">
+    <button role="tab" id="t-cards" aria-selected="true" aria-controls="p-cards">🪪 الوثائق</button>
+    <button role="tab" id="t-pay" aria-selected="false" aria-controls="p-pay">💳 الدفع</button>
+    <button role="tab" id="t-act" aria-selected="false" aria-controls="p-act">📊 النشاط</button>
+  </div>
+
+  <section id="p-cards" role="tabpanel" aria-labelledby="t-cards"><div class="cards" id="docs"></div></section>
+  <section id="p-pay" role="tabpanel" aria-labelledby="t-pay" hidden><div class="cards" id="payCards"></div></section>
+  <section id="p-act" role="tabpanel" aria-labelledby="t-act" hidden><div class="box"><h3>آخر العمليات</h3><ul class="act" id="activity"></ul></div></section>
+</main>
+
+<script src="assets/js/qr.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+NCC.shell();
+ID.ready(function (u, D) {
+  const e = ID.esc, st = ID.state(), civ = D.civil(), tr = D.traffic(), bal = D.balances();
+  const sil = '<svg viewBox="0 0 70 80" aria-hidden="true"><circle cx="35" cy="28" r="15" fill="#7d8b96"/><path d="M6 80c2-26 16-32 29-32s27 6 29 32z" fill="#7d8b96"/></svg>';
+
+  /* الوثائق */
+  let h = '';
+  if (u.age >= 16) {
+    h += '<article class="wc nid" aria-label="بطاقة الرقم القومي"><span class="cap">جمهورية مصر العربية</span><div class="row"><div class="photo">' + sil + '</div><div><p><b>بطاقة تحقيق الشخصية</b></p><p style="font-size:1rem"><b>' + e(u.name) + '</b></p><p>تاريخ الميلاد: ' + ID.fmtDate(new Date(u.y, u.m - 1, u.d)) + '</p><p>العنوان: ' + e(civ.addr) + ' - ' + e(u.gov) + '</p></div></div><div class="no">' + u.nid + '</div><p style="position:absolute;bottom:10px;right:16px;font-size:.65rem">تاريخ الانتهاء: ' + ID.fmtDate(ID.addYears(civ.issue, 7)) + '</p></article>';
+  } else h += '<article class="wc na"><div><b>🪪 بطاقة الرقم القومي</b><p>تُصدر بعد بلوغ سن 16 سنة.</p></div></article>';
+
+  h += '<article id="birth" class="wc birth" aria-label="وثيقة الميلاد"><p class="t">وثيقة ميلاد مميكنة</p><p>الاسم: <b>' + e(u.name) + '</b></p><p>تاريخ الميلاد: ' + ID.fmtDate(new Date(u.y, u.m - 1, u.d)) + '</p><p>النوع: ' + u.gender + '</p><p>محل الميلاد: ' + e(u.gov) + ' - جمهورية مصر العربية</p><div class="qr" data-qr="IDEGYPT-DEMO|BIRTH|' + ID.refCode(u.nid + 'birth') + '"></div></article>';
+
+  if (tr.hasLicense) {
+    const exp = st.licRenewed ? ID.addYears(new Date(st.licRenewed), 10) : ID.addYears(tr.licIssue, 10), expired = exp < ID.NOW;
+    h += '<article class="wc lic" aria-label="رخصة القيادة"><p><b>رخصة قيادة خاصة</b> <span class="pill ' + (expired ? 'bad' : 'ok') + '">' + (expired ? 'منتهية' : 'سارية') + '</span></p><p style="font-size:1rem"><b>' + e(u.name) + '</b></p><p>رقم الرخصة: <span class="mono">' + tr.licNo + '</span></p><p>نوع المركبة: ملاكي • الفئة: B-01</p><p>تاريخ الإصدار: ' + ID.fmtDate(st.licRenewed ? new Date(st.licRenewed) : tr.licIssue) + '</p><p>تاريخ الانتهاء: ' + ID.fmtDate(exp) + '</p></article>';
+  } else h += '<article class="wc na"><div><b>🚗 رخصة القيادة</b><p>تتاح بعد بلوغ سن 18 سنة.</p></div></article>';
+  document.getElementById('docs').innerHTML = h;
+
+  /* الدفع */
+  document.getElementById('payCards').innerHTML =
+    '<article class="wc pay" aria-label="بطاقة الدفع"><div style="display:flex;justify-content:space-between;align-items:center"><div class="chip"></div><span class="mc"><i></i><i></i></span></div><p style="margin:10px 0;font-size:.85rem">امسح الكود للدفع اللحظي (InstaPay)</p><div class="qrbox" data-qr="IDEGYPT-DEMO|PAY|' + ID.refCode(u.nid + 'pay') + '"></div><p style="color:var(--brand);font-weight:700;margin:6px 0 0">' + e(u.name) + '</p></article>' +
+    '<article class="box" style="width:100%;max-width:380px"><h3>💰 الرصيد المتاح</h3><div class="big">' + ID.fmt(bal.ahli) + ' <small style="font-size:1rem">جم</small></div><p class="muted">الحساب الجاري - ' + e(D.bank().ahli.bank) + ' ' + D.bank().ahli.mask + '</p><a class="button outline sm" href="banks.html" style="margin-top:8px">تفاصيل الحسابات</a></article>';
+
+  /* النشاط */
+  document.getElementById('activity').innerHTML = st.activity.length ? st.activity.slice(0, 25).map(a => '<li><span><b>' + e(a.title) + '</b> · ' + e(a.text) + '</span><small>' + ID.fmtDate(new Date(a.t)) + '</small></li>').join('') : '<li>لا توجد عمليات بعد.</li>';
+  ID.paintQr();
+
+  /* التبويبات */
+  const tabs = { cards: 't-cards', pay: 't-pay', act: 't-act' };
+  function show(k) {
+    if (!tabs[k]) k = 'cards';
+    Object.keys(tabs).forEach(x => { document.getElementById('p-' + x).hidden = x !== k; document.getElementById(tabs[x]).setAttribute('aria-selected', String(x === k)); });
+  }
+  Object.keys(tabs).forEach(k => document.getElementById(tabs[k]).onclick = () => { show(k); history.replaceState(null, '', '#' + k); });
+  const hs = location.hash.slice(1); show(hs === 'birth' ? 'cards' : hs);
+  if (hs === 'birth') setTimeout(() => document.getElementById('birth').scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ID Egypt | وزارة الداخلية</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.plate{display:inline-block;background:#fff;color:#111;border:3px solid #111;border-radius:8px;padding:2px 18px;font-weight:800;font-size:1.3rem;letter-spacing:3px;margin:4px 0}
+.vio{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}
+.vio:last-child{border:0}
+</style>
+</head>
+<body>
+<main class="page" id="main">
+  <div class="crumbs"><a href="index.html">الرئيسية</a> › وزارة الداخلية</div>
+  <div class="page-head"><div><h1>🛡️ بوابة وزارة الداخلية الرقمية</h1><p>المرور والأحوال المدنية</p></div>
+    <div class="btn-row" style="margin:0"><a class="button ghost sm" href="passports.html">الجوازات</a><a class="button ghost sm" href="defense.html">التجنيد</a></div></div>
+
+  <div class="split even">
+    <section class="box accent" style="--c:var(--bad)" aria-labelledby="h-tr">
+      <h3 id="h-tr"><span class="ico">🚗</span>نيابة المرور</h3>
+      <p>رقم اللوحة: <span class="plate" id="plate"></span></p>
+      <p>إجمالي المخالفات المستحقة: <b class="big" id="due" style="font-size:1.5rem"></b> <small>جم</small></p>
+      <div id="violations"></div>
+      <div class="btn-row" id="payAllRow"><button class="button" id="payAll" type="button">دفع كل المخالفات</button></div>
+    </section>
+
+    <div class="stack">
+      <section class="box accent" style="--c:var(--ok)" aria-labelledby="h-lic">
+        <h3 id="h-lic"><span class="ico">🪪</span>رخصة القيادة</h3>
+        <div id="license"></div>
+      </section>
+      <section class="box accent" style="--c:var(--info)" aria-labelledby="h-civ">
+        <h3 id="h-civ"><span class="ico">🛂</span>الأحوال المدنية</h3>
+        <div id="civil"></div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+NCC.shell();
+ID.ready(function (u, D) {
+  const $ = id => document.getElementById(id), st = ID.state(), tr = D.traffic(), civ = D.civil(), e = ID.esc;
+  const LIC_FEE = 300, ID_FEE = 100;
+
+  function doPay(amount, title, after) {
+    ID.confirm('تأكيد الدفع', 'سيتم خصم ' + ID.fmt(amount) + ' جم من حسابك الجاري مقابل: ' + title + '.', 'ادفع الآن').then(ok => {
+      if (!ok) return; const r = ID.pay(amount, title);
+      if (!r.ok) { ID.toast(r.err, true); return; }
+      after(); ID.save(); ID.toast('تمت العملية بنجاح'); render();
+    });
+  }
+
+  function render() {
+    $('plate').textContent = tr.plate;
+    const open = tr.viol.filter(v => !st.paid[v.id]), sum = open.reduce((s, v) => s + v.amount, 0);
+    $('due').textContent = ID.fmt(sum);
+    $('violations').innerHTML = tr.viol.length ? tr.viol.map(v => {
+      const paid = !!st.paid[v.id];
+      return '<div class="vio"><div><b>' + e(v.desc) + '</b><br><small>رقم ' + v.id + ' • ' + ID.fmtDate(v.date) + '</small></div><div>' + (paid ? '<span class="pill ok">مسددة</span>' : '<b class="bad">' + v.amount + ' جم</b> <button class="button sm" data-pay="' + v.id + '" type="button">دفع</button>') + '</div></div>';
+    }).join('') : '<p class="empty" style="padding:16px"><span class="em">✅</span>لا توجد مخالفات مسجلة على هذه المركبة.</p>';
+    $('payAllRow').hidden = open.length < 2;
+
+    if (!tr.hasLicense) $('license').innerHTML = '<p class="muted">رخصة القيادة تتاح بعد بلوغ سن 18 سنة.</p>';
+    else {
+      const exp = st.licRenewed ? ID.addYears(new Date(st.licRenewed), 10) : ID.addYears(tr.licIssue, 10), expired = exp < ID.NOW;
+      $('license').innerHTML = '<div class="kv"><span>رقم الرخصة</span><b class="mono">' + tr.licNo + '</b></div><div class="kv"><span>الفئة</span><b>خاصة - ملاكي (B-01)</b></div><div class="kv"><span>تاريخ الانتهاء</span><b>' + ID.fmtDate(exp) + '</b></div><div class="kv"><span>الحالة</span><span class="pill ' + (expired ? 'bad' : 'ok') + '">' + (expired ? 'منتهية' : 'سارية') + '</span></div>' +
+        '<div class="btn-row"><button class="button sm" id="renewLic" type="button">تجديد الرخصة (' + LIC_FEE + ' جم)</button><a class="button ghost sm" href="wallet.html#cards">عرض في المحفظة</a></div>';
+      $('renewLic').onclick = () => doPay(LIC_FEE, 'تجديد رخصة القيادة', () => { st.licRenewed = Date.now(); });
+    }
+
+    const pend = !!st.idRenewal;
+    $('civil').innerHTML = '<div class="kv"><span>بطاقة الرقم القومي</span><b>صادرة ' + ID.fmtDate(civ.issue) + '</b></div><div class="kv"><span>طلب تجديد البطاقة</span>' + (pend ? '<span class="pill warn">قيد المعالجة</span>' : '<span class="pill">لا يوجد طلب</span>') + '</div>' +
+      '<div class="btn-row">' + (pend ? '' : '<button class="button sm" id="renewId" type="button">طلب تجديد بطاقة (' + ID_FEE + ' جم)</button>') + '<a class="button ghost sm" href="wallet.html#birth">استخراج شهادة ميلاد</a></div>';
+    const rb = $('renewId'); if (rb) rb.onclick = () => doPay(ID_FEE, 'طلب تجديد بطاقة الرقم القومي', () => { st.idRenewal = Date.now(); });
+  }
+
+  $('violations').addEventListener('click', ev => {
+    const b = ev.target.closest('[data-pay]'); if (!b) return;
+    const v = tr.viol.find(x => x.id === b.dataset.pay);
+    doPay(v.amount, 'مخالفة مرورية ' + v.id, () => { st.paid[v.id] = Date.now(); });
+  });
+  $('payAll').onclick = () => {
+    const open = tr.viol.filter(v => !st.paid[v.id]);
+    doPay(open.reduce((s, v) => s + v.amount, 0), 'سداد مخالفات مرورية (' + open.length + ')', () => { open.forEach(v => { st.paid[v.id] = Date.now(); }); });
+  };
+  render();
+});
+</script>
+</body>
+</html>

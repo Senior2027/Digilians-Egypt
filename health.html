@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ID Egypt | الملف الصحي الموحد</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+:root{--hl:#b388ff}
+.rx{background:#fff;color:#333;padding:18px;border-radius:10px;position:relative;font-family:"Courier New",monospace;margin-top:12px}
+.rx .seal{position:absolute;top:10px;left:10px;border:2px solid #6a3ce7;color:#6a3ce7;padding:2px 8px;transform:rotate(-14deg);opacity:.6;font-weight:800}
+.hosp{background:#3498db18;border:1px solid #3498db;border-radius:10px;padding:14px;margin-bottom:10px}
+.ins{color:#eef3ff;background:linear-gradient(135deg,#1c3f5c,#2a6b8a);border-radius:14px;padding:18px}
+.vac{list-style:none;margin:0;padding:0}.vac li{padding:7px 0;border-bottom:1px solid var(--line)}.vac li:last-child{border:0}
+.appt{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}
+.appt:last-child{border:0}
+</style>
+</head>
+<body>
+<main class="page" id="main">
+  <div class="crumbs"><a href="index.html">الرئيسية</a> › وزارة الصحة</div>
+  <div class="page-head"><div><h1 style="color:var(--hl)">🩺 الملف الطبي الموحد</h1><p>المريض: <b class="hl" id="pn"></b> • فصيلة الدم: <b class="bad" id="bt"></b></p></div></div>
+
+  <div class="split">
+    <div class="stack">
+      <section class="box edge" style="--c:var(--hl)" id="records" aria-labelledby="h-rec">
+        <h3 id="h-rec">🩺 السجل المرضي الحالي</h3>
+        <p>الحالة الصحية: <span class="pill ok">مستقرة</span></p>
+        <hr>
+        <h4>الروشتة الإلكترونية (E-Prescription)</h4>
+        <div class="rx"><span class="seal">APPROVED</span><p><b>Rx:</b> <span id="rxd"></span></p><p><b>Instruction:</b> <span id="rxt"></span></p><small id="rxm" style="color:#555"></small></div>
+      </section>
+
+      <section class="box" id="insurance" aria-labelledby="h-ins">
+        <h3 id="h-ins">🛡️ التأمين الصحي الشامل</h3>
+        <div class="ins"><p style="margin:0;opacity:.8">بطاقة التأمين الصحي</p><p class="mono" style="font-size:1.3rem;margin:6px 0" id="insNo"></p><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span id="insName"></span><span>سارٍ حتى <b id="insExp"></b></span></div></div>
+      </section>
+
+      <section class="box" aria-labelledby="h-vac"><h3 id="h-vac">💉 سجل التطعيمات واللقاحات</h3><ul class="vac" id="vac"></ul></section>
+    </div>
+
+    <aside class="stack">
+      <section class="box" id="booking" aria-labelledby="h-bk">
+        <h3 id="h-bk">🏥 حجز العيادات بالمستشفيات الحكومية</h3>
+        <div id="hosp"></div>
+        <h4 style="margin-top:16px">مواعيدي</h4>
+        <div id="appts"></div>
+      </section>
+      <section class="box accent" id="emergency" style="--c:var(--bad)" aria-labelledby="h-em">
+        <h3 id="h-em">🆘 الطوارئ</h3>
+        <p class="muted" style="font-size:.9rem">نسخة تجريبية: الزر لا يتصل بالإسعاف فعلياً. في الحالات الطارئة الحقيقية اتصل بالرقم <b class="ltr">123</b> مباشرة.</p>
+        <button class="button danger block" id="em" type="button">محاكاة استدعاء الطوارئ 123</button>
+      </section>
+    </aside>
+  </div>
+</main>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/shell.js"></script>
+<script>
+NCC.shell();
+ID.ready(function (u, D) {
+  const $ = id => document.getElementById(id), h = D.health(), st = ID.state(), e = ID.esc;
+  $('pn').textContent = u.name; $('bt').textContent = h.blood;
+  $('rxd').textContent = h.med.d; $('rxt').textContent = h.med.t; $('rxm').textContent = 'بتاريخ: ' + ID.fmtDate(h.rxDate) + ' | د. أحمد كمال - ' + h.hosp[1];
+  $('insNo').textContent = h.ins; $('insName').textContent = u.name; $('insExp').textContent = ID.fmtDate(ID.addYears(ID.ANCHOR, 1));
+  $('vac').innerHTML = h.vac.slice(0, 2).map(v => '<li>✅ ' + v + ' - مكتمل</li>').join('') + '<li>⏳ جرعة تكميلية - الموعد القادم: ' + ID.fmtDate(h.next) + '</li>';
+
+  $('hosp').innerHTML = h.hosp.map((n, i) => '<div class="hosp"><b>' + e(n) + '</b><p style="font-size:.85rem" class="muted">متاح: الباطنة، العظام، الرمد</p><button class="button sm" type="button" data-i="' + i + '">حجز كشف</button></div>').join('');
+  $('hosp').addEventListener('click', ev => {
+    const b = ev.target.closest('[data-i]'); if (!b) return; const name = h.hosp[b.dataset.i], min = ID.addDays(new Date(), 1).toISOString().slice(0, 10);
+    ID.dialog({ title: 'حجز كشف - ' + name, fields: [{ id: 'clinic', label: 'العيادة', options: ['الباطنة', 'العظام', 'الرمد'] }, { id: 'date', label: 'تاريخ الكشف', type: 'date', min: min, value: min, test: v => v >= min, msg: 'اختر تاريخاً من الغد فصاعداً.' }], ok: 'تأكيد الحجز' }).then(v => {
+      if (!v) return; st.appointments.push({ id: Date.now(), hospital: name, clinic: v.clinic, date: v.date }); ID.log('حجز كشف', v.clinic + ' - ' + name); renderAppts(); ID.toast('تم حجز موعدك بنجاح الساعة 10:00 صباحاً');
+    });
+  });
+  function renderAppts() {
+    $('appts').innerHTML = st.appointments.length ? st.appointments.slice().sort((a, b) => a.date < b.date ? -1 : 1).map(a => '<div class="appt"><div><b>' + e(a.clinic) + '</b> - ' + e(a.hospital) + '<br><small>' + a.date.split('-').reverse().join('/') + ' • 10:00 ص</small></div><button class="button ghost sm" type="button" data-c="' + a.id + '">إلغاء</button></div>').join('') : '<p class="muted">لا توجد مواعيد محجوزة.</p>';
+  }
+  $('appts').addEventListener('click', ev => {
+    const b = ev.target.closest('[data-c]'); if (!b) return;
+    ID.confirm('إلغاء الموعد', 'هل تريد إلغاء هذا الحجز؟', 'إلغاء الحجز', true).then(ok => { if (!ok) return; st.appointments = st.appointments.filter(a => String(a.id) !== b.dataset.c); ID.log('إلغاء حجز', 'تم إلغاء موعد طبي'); renderAppts(); });
+  });
+  $('em').onclick = () => ID.confirm('محاكاة استدعاء الطوارئ', 'هذه محاكاة فقط ولن يتم الاتصال بأي جهة. هل تريد المتابعة؟', 'محاكاة').then(ok => { if (ok) { ID.log('محاكاة طوارئ', 'تجربة زر الطوارئ'); ID.toast('تمت المحاكاة - لا يوجد اتصال فعلي'); } });
+  renderAppts();
+});
+</script>
+</body>
+</html>
