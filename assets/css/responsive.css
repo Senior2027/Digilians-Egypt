@@ -1,0 +1,362 @@
+/* ==================================================
+   Responsive layout: Digilians Egypt
+   Mobile, tablet, and large-screen improvements
+   ================================================== */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* ---------- Tablets and small laptops ---------- */
+@media (max-width: 1000px) {
+  .ncc-hero {
+    min-height: auto;
+  }
+
+  .ncc-nav {
+    border-radius: 24px;
+  }
+
+  .hero-body {
+    min-height: 520px;
+  }
+
+  .ncc-lower .wrap,
+  .uh,
+  .contact {
+    grid-template-columns: 1fr;
+  }
+
+  .feats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .feat:nth-child(3) {
+    border-inline-start: 0;
+  }
+
+  .idpanel {
+    grid-template-columns: 1fr;
+  }
+
+  .uh-main {
+    text-align: center;
+  }
+
+  .idtop {
+    justify-content: center;
+  }
+
+  .strip.four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ncc-foot .in {
+    align-items: center;
+  }
+}
+
+/* ---------- Mobile navigation and layout ---------- */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .ncc-hero,
+  .user-hero {
+    min-height: auto;
+    padding: 12px 12px 20px;
+  }
+
+  .ncc-nav {
+    width: 100%;
+    flex-wrap: wrap;
+    padding: 10px 12px;
+  }
+
+  .ncc-brand img {
+    height: 44px;
+  }
+
+  .ncc-brand b {
+    font-size: 0.9rem;
+  }
+
+  .ncc-brand small {
+    font-size: 0.65rem;
+  }
+
+  .ncc-tools {
+    margin-inline-start: auto;
+  }
+
+  .ncc-burger {
+    display: inline-flex;
+  }
+
+  .ncc-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    order: 5;
+  }
+
+  .ncc-links.open {
+    display: flex;
+  }
+
+  .ncc-links a {
+    width: 100%;
+    text-align: center;
+  }
+
+  .hero-body {
+    min-height: 440px;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 0 24px;
+  }
+
+  .hero-body h1 {
+    font-size: clamp(1.85rem, 9vw, 2.4rem);
+  }
+
+  .hero-body .sub {
+    font-size: 1rem;
+  }
+
+  .hero-tag {
+    gap: 8px;
+  }
+
+  .hero-tag::before,
+  .hero-tag::after {
+    width: 28px;
+  }
+
+  .hsearch,
+  .hsearch input,
+  .cta,
+  .cta .big-btn {
+    width: 100%;
+  }
+
+  .hsearch input {
+    padding-inline-start: 52px;
+  }
+
+  .cta {
+    display: grid;
+  }
+
+  .cta .big-btn {
+    min-width: 0;
+  }
+
+  .strip,
+  .strip.four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .strip a {
+    padding: 14px 12px;
+  }
+
+  .strip .ic svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .ncc-lower {
+    padding: 36px 12px;
+  }
+
+  .ncc-lower h2 {
+    justify-content: center;
+  }
+
+  .ncc-lower h2::after {
+    display: none;
+  }
+
+  .ncc-lower p.lead {
+    text-align: center;
+  }
+
+  .video {
+    width: 100%;
+    min-height: 220px;
+  }
+
+  .feats {
+    grid-template-columns: 1fr;
+  }
+
+  .feat {
+    border-inline-start: 0;
+    border-top: 1px solid #e3e8f5;
+  }
+
+  .feat:first-child {
+    border-top: 0;
+  }
+
+  .sec {
+    padding-inline: 12px;
+  }
+
+  .grid,
+  .stats,
+  .nums {
+    grid-template-columns: 1fr !important;
+  }
+
+  .ncc-foot {
+    margin-top: 40px;
+  }
+
+  .ncc-foot .in {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .ncc-foot .flinks,
+  .social {
+    justify-content: center;
+  }
+
+  .uh {
+    padding: 12px 0 20px;
+  }
+
+  .idgrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .uh-qr {
+    padding-top: 12px;
+  }
+
+  .uh-qr .qrwrap svg {
+    width: 112px;
+    height: 112px;
+  }
+
+  .id-modal,
+  .id-modal.wide {
+    width: calc(100% - 24px);
+    max-width: calc(100% - 24px);
+  }
+
+  .split,
+  .split.even {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Small phones ---------- */
+@media (max-width: 480px) {
+  .ncc-brand span {
+    display: none;
+  }
+
+  .ncc-tools .sep,
+  #langBtn {
+    display: none;
+  }
+
+  .strip,
+  .strip.four,
+  .nums,
+  .idgrid,
+  .feats {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-body h1 {
+    font-size: 1.85rem;
+  }
+
+  .hero-body .sub {
+    font-size: 0.95rem;
+  }
+
+  .hero-tag::before,
+  .hero-tag::after {
+    width: 18px;
+  }
+
+  .ncc-lower h2 {
+    font-size: 1.45rem;
+  }
+
+  .ncc-foot .tagline {
+    font-size: 1.1rem;
+  }
+
+  .idtop {
+    align-items: flex-start;
+  }
+
+  .idtop b {
+    font-size: 1.05rem;
+  }
+
+  .act li {
+    flex-direction: column;
+  }
+}
+
+/* ---------- Desktop and large screens ---------- */
+@media (min-width: 769px) {
+  .ncc-hero {
+    padding-inline: 32px;
+  }
+
+  .ncc-nav {
+    min-height: 68px;
+  }
+
+  .hero-body {
+    min-height: 560px;
+  }
+
+  .strip {
+    margin-bottom: 22px;
+  }
+
+  .ncc-lower .wrap,
+  .sec,
+  .ncc-foot .in {
+    max-width: 1240px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .ncc-nav,
+  .hero-body,
+  .strip,
+  .ncc-lower .wrap,
+  .sec,
+  .uh,
+  .dsec,
+  .ncc-foot .in {
+    max-width: 1320px;
+  }
+
+  .ncc-hero {
+    min-height: 920px;
+  }
+}
